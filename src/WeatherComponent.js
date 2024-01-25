@@ -187,17 +187,19 @@ const WeatherComponent = () => {
   }, [selectedLayer, selectedItems]);
 
   const fetchWeatherImages = async () => {
+    let startDate = selectedStartDate;
+    let endDate = selectedEndDate;
     if (selectedStartDate === selectedEndDate) {
-      const startDate = new Date(selectedStartDate);
-      startDate.setDate(startDate.getDate() - 1);
-      setSelectedStartDate(startDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
-      const endDate = new Date(selectedEndDate);
-      endDate.setDate(endDate.getDate() + 1);
-      setSelectedEndDate(endDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
+      const startDateTemp = new Date(selectedStartDate);
+      startDateTemp.setDate(startDateTemp.getDate() - 1);
+      startDate = startDateTemp.toISOString().split("T")[0];
+      const endDateTemp = new Date(selectedEndDate);
+      endDateTemp.setDate(endDateTemp.getDate() + 1);
+      endDate = endDateTemp.toISOString().split("T")[0];
     }
     try {
       const response = await fetch(
-        `${apiAddress}/api/weather_images/${selectedLocation}/${selectedLayer}/${selectedStartDate}/${selectedEndDate}`
+        `${apiAddress}/api/weather_images/${selectedLocation}/${selectedLayer}/${startDate}/${endDate}`
       );
 
       const filename = `weather_images_${selectedLocation}.zip`;
@@ -227,21 +229,22 @@ const WeatherComponent = () => {
   const fetchWeatherData = async () => {
     const additionalTypes = ["latitude", "longitude", "weather", "description"];
     const allWeatherDataTypes = [...additionalTypes, ...selectedItems];
+    let startDate = selectedStartDate;
+    let endDate = selectedEndDate;
     if (selectedStartDate === selectedEndDate) {
-      const startDate = new Date(selectedStartDate);
-      startDate.setDate(startDate.getDate() - 1);
-      setSelectedStartDate(startDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
-      const endDate = new Date(selectedEndDate);
-      endDate.setDate(endDate.getDate() + 1);
-      setSelectedEndDate(endDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
+      const startDateTemp = new Date(selectedStartDate);
+      startDateTemp.setDate(startDateTemp.getDate() - 1);
+      startDate = startDateTemp.toISOString().split("T")[0];
+      const endDateTemp = new Date(selectedEndDate);
+      endDateTemp.setDate(endDateTemp.getDate() + 1);
+      endDate = endDateTemp.toISOString().split("T")[0];
     }
 
     // Convert the array to a comma-separated string
     const weatherDataTypesString = allWeatherDataTypes.join(", ");
-    console.log(weatherDataTypesString);
     try {
       const response = await fetch(
-        `${apiAddress}/api/weather_data/${selectedLocation.trim()}/${weatherDataTypesString}/${selectedStartDate}/${selectedEndDate}`
+        `${apiAddress}/api/weather_data/${selectedLocation.trim()}/${weatherDataTypesString}/${startDate}/${endDate}`
       );
 
       const filename = `weather_data_${selectedLocation}.zip`;
@@ -271,17 +274,19 @@ const WeatherComponent = () => {
   const fetchWeatherImagesAndData = async () => {
     const additionalTypes = ["latitude", "longitude", "weather", "description"];
     const allWeatherDataTypes = [...additionalTypes, ...selectedItems];
+    let startDate = selectedStartDate;
+    let endDate = selectedEndDate;
     if (selectedStartDate === selectedEndDate) {
-      const startDate = new Date(selectedStartDate);
-      startDate.setDate(startDate.getDate() - 1);
-      setSelectedStartDate(startDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
-      const endDate = new Date(selectedEndDate);
-      endDate.setDate(endDate.getDate() + 1);
-      setSelectedEndDate(endDate.toISOString().split("T")[0]); // Format as YYYY-MM-DD
+      const startDateTemp = new Date(selectedStartDate);
+      startDateTemp.setDate(startDateTemp.getDate() - 1);
+      startDate = startDateTemp.toISOString().split("T")[0];
+      const endDateTemp = new Date(selectedEndDate);
+      endDateTemp.setDate(endDateTemp.getDate() + 1);
+      endDate = endDateTemp.toISOString().split("T")[0];
     }
     try {
       const response = await fetch(
-        `${apiAddress}/api/weather_images_and_data/${selectedLocation.trim()}/${selectedLayer}/${allWeatherDataTypes}/${selectedStartDate}/${selectedEndDate}`
+        `${apiAddress}/api/weather_images_and_data/${selectedLocation.trim()}/${selectedLayer}/${allWeatherDataTypes}/${startDate}/${endDate}`
       );
 
       const filename = `weather_images_and_data_${selectedLocation}.zip`;
@@ -327,6 +332,7 @@ const WeatherComponent = () => {
     setSelectedOption(event.target.value);
     setSelectedLayer("");
     setSelectedItems([]);
+    setStartEndDates([]);
   };
 
   const itemsList = [
@@ -497,8 +503,8 @@ const WeatherComponent = () => {
       <div>
         {startEndDates.length > 0 && (
           <>
-            <div>
-              <label htmlFor="start-date">Start Date:</label>
+            <div style={{ marginLeft: "1rem" }}>
+              <label htmlFor="start-date">Start Date: </label>
               <input
                 type="date"
                 id="start-date"
@@ -507,8 +513,9 @@ const WeatherComponent = () => {
                 min={startEndDates[0]} // Set min attribute to the min date
                 max={startEndDates[1]} // Set max attribute to the max date
               />
-
-              <label htmlFor="end-date">End Date:</label>
+              <p>Min date: {startEndDates[0]}</p>
+              <br />
+              <label htmlFor="end-date">End Date: </label>
               <input
                 type="date"
                 id="end-date"
@@ -518,15 +525,17 @@ const WeatherComponent = () => {
                 max={startEndDates[1]} // Set max attribute to the max date
               />
 
-              <p>
-                Min date: {startEndDates[0]} Max date: {startEndDates[1]}
-              </p>
+              <p>Max date: {startEndDates[1]}</p>
             </div>
           </>
         )}
         <br />
         {selectedStartDate && selectedEndDate && startEndDates.length > 0 && (
-          <Button variant="contained" onClick={downloadData}>
+          <Button
+            variant="contained"
+            onClick={downloadData}
+            style={{ marginLeft: "1rem" }}
+          >
             DOWNLOAD
           </Button>
         )}

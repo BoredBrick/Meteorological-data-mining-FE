@@ -62,7 +62,7 @@ const WeatherComponent = () => {
   };
 
   // Set the API address
-  const apiAddress = "http://158.193.177.21:5000";
+  const apiAddress = "http://158.193.177.12:5000";
 
   useEffect(() => {
     fetchLocations();
